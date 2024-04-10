@@ -1,0 +1,1 @@
+set PATH=%PATH%;src\main\cpp
