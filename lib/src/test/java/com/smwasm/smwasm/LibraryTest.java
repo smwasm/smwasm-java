@@ -3,45 +3,65 @@
  */
 package com.smwasm.smwasm;
 
+import java.nio.file.Paths;
+import java.time.LocalTime;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import com.smwasm.smwasm.SmHub;
+import com.smwasm.smwasm.SmWasm;
 
 public class LibraryTest {
-    @Test
-    public void useSmWasm() {
-        SmWasm obj = new SmWasm();
-        System.out.println(">>> --- begin test 006 --- (" + obj.sn() + ") ---");
-        obj.load("../../../../golang/tinylib/smtinylib.wasm", false);
-        obj.load("../../../../../rust/wasm/smlibr/pkg/smlibr_bg.wasm", false);
-        obj.load("../../../../../rust/wasm/smlibr2/pkg/smlibr2_bg.wasm", false);
 
-        System.out.println(">>> --- loaded --- (" + obj.sn() + ") ---");
+    private static final int TIMES = 10 * 10000;
 
+    private SmWasm obj;
+    private SmHub smh;
+
+    private void testPerform() {
         String strInput = "{\"$usage\":\"smexample.heart.beat\"}";
-        String strOutput = obj.call(strInput);
+        String strOutput = smh.call(strInput);
         System.out.println(">>> --- call --- (" + obj.sn() + ") --- " + strInput + " --- " + strOutput);
 
         long millis = System.currentTimeMillis();
-        for (int i = 0; i < 10 * 10000; i++) {
+        for (int i = 0; i < TIMES; i++) {
             strInput = "{\"$usage\":\"smtest.heart.beat\"}";
-            strOutput = obj.call(strInput);
+            strOutput = smh.call(strInput);
         }
         long span = System.currentTimeMillis() - millis;
         System.out
                 .println(">>> --- span --- (" + obj.sn() + ") --- " + span + " --- " + strInput + " --- " + strOutput);
+    }
 
+    private void testOne(String strInput, String prompt) {
+        String strOutput = smh.call(strInput);
+        System.out.println(">>> --- " + prompt + " --- (" + obj.sn() + ") --- " + strInput + " --- " + strOutput);
+    }
+
+    @Test
+    public void useSmWasm() {
+        MySm.register();
+        String osName = System.getProperty("os.name");
+
+        obj = new SmWasm();
+        smh = SmHub.getInstance();
+        LocalTime localTime = LocalTime.now();
+        System.out.println(">>> --- begin test " + localTime + " --- (" + obj.sn() + ") --- " + osName + " ---");
+        obj.load("../../_test/wasm/smrdklibr_bg.wasm", 0);
+        obj.load("../../_test/wasm/smlibr_bg.wasm", 0);
+        obj.load("../../_test/wasm/smlibr2_bg.wasm", 0);
+
+        System.out.println(">>> --- loaded --- (" + obj.sn() + ") ---");
+
+        testPerform();
         System.out.println(">>> --- end app --- (" + obj.sn() + ") ---");
 
-        strInput = "{\"$usage\":\"smtest.wrap.beat\"}";
-        strOutput = obj.call(strInput);
-        System.out.println(">>> --- call outside sm --- (" + obj.sn() + ") --- " + strInput + " --- " + strOutput);
+        testOne("{\"$usage\":\"sys.get.ms\"}", "call get ms");
+        testOne("{\"$usage\":\"smtest.wrap.beat\"}", "call wrap beat");
+        testOne("{\"$usage\":\"smtest.native.beat\"}", "call native beat");
+        testOne("{\"$usage\":\"smtest.third.beat\"}", "call third beat");
+        testOne("{\"$usage\":\"smtest.heart2g.beat\", \"text\": \"eee\"}", "call heart2g beat");
 
-        strInput = "{\"$usage\":\"smtest.native.beat\"}";
-        strOutput = obj.call(strInput);
-        System.out.println(">>> --- call outside sm --- (" + obj.sn() + ") --- " + strInput + " --- " + strOutput);
-
-        strInput = "{\"$usage\":\"smtest.third.beat\"}";
-        strOutput = obj.call(strInput);
-        System.out.println(">>> --- call outside sm --- (" + obj.sn() + ") --- " + strInput + " --- " + strOutput);
+        testOne("{\"$usage\":\"smker.get.all\"}", "get all sm");
     }
 }

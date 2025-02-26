@@ -13,17 +13,19 @@ package com.smwasm.smwasm;
 // cd bjavawasm/smwasm/src/main/cpp
 // gcc -shared -fpic HelloJNI.c -o libhello.so -I ${JAVA_HOME}/include -I ${JAVA_HOME}/include/linux
 //
-
 public class SmWasm {
+
     static {
-        System.loadLibrary("smwasm");
+        System.loadLibrary("smwasmjni");
     }
 
     private static final Object lock = new Object();
 
-    public native void load(String szWasm, boolean isWat);
+    public native void load(String szWasm, int space);
 
     public native int sn();
+
+    public native boolean register(String usage);
 
     public native String call(String input);
 }

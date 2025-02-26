@@ -20,18 +20,6 @@ def currentTime = new Date()
 println "--- current time --- ${currentTime} ---"
 println "--- current dir --- ${project.projectDir} ---"
 
-def repoTop
-
-def osName = System.getProperty('os.name').toLowerCase()
-if (osName.contains('windows')) {
-    repoTop = "/git/ee"
-} else if (osName.contains('linux')) {
-    repoTop = "/home/jzr/repo"
-}
-
-def javaHome = "${System.getenv('JAVA_HOME')}"
-def libPath = "-Djava.library.path=" + repoTop + "/smmo/other/java/maven/smwasm/lib/src/main/cpp"
-
 
 sourceSets {
     main {
@@ -51,28 +39,32 @@ repositories {
     mavenCentral()
 }
 
+//--- build ----------------------------------------------------------
 
 task buildJNI(type: Exec) {
-    workingDir 'src/main/cpp'
-    if (osName.contains('linux')) {
-        commandLine 'g++', '-O3', '-DNDEBUG', '-shared', '-fpic', 'c_json.cpp', 'c_base.cpp', 'c_import.cpp', 'c_import1.cpp', 'c_import2.cpp', 'c_wasmdata.cpp', 'c_wasmengine.cpp', 'c_wasminstance.cpp',
-        'c_wasmitem.cpp', 'c_wasmmodule.cpp', 'c_wasmstore.cpp', 'loadwasm.cpp', 'm_cpptest.cpp', 'wrap.cpp', '-I', repoTop + '/wasmtime/crates/c-api/include', '-I', repoTop + '/wasmtime/crates/c-api/wasm-c-api/include', '-I', javaHome + '/include', '-I',  javaHome + '/include/linux', repoTop + '/wasmtime/target/release/libwasmtime.a', '-lpthread', '-ldl', '-lm', '-o', 'libsmwasm.so'
-    } else if (osName.contains('windows')) {
-        commandLine 'g++', '-O3', '-DNDEBUG', '-shared', '-fpic', 'c_json.cpp', 'c_base.cpp', 'c_import.cpp', 'c_import1.cpp', 'c_import2.cpp', 'c_wasmdata.cpp', 'c_wasmengine.cpp', 'c_wasminstance.cpp',
-        'c_wasmitem.cpp', 'c_wasmmodule.cpp', 'c_wasmstore.cpp', 'loadwasm.cpp', 'm_cpptest.cpp', 'wrap.cpp', '-I', repoTop + '/wasmtime/crates/c-api/include', '-I', repoTop + '/wasmtime/crates/c-api/wasm-c-api/include', '-I', javaHome + '/include', '-I',  javaHome + '/include/win32', repoTop + '/wasmtime/target/release/wasmtime.dll.lib', '-lpthread', '-lm', '-o', 'smwasm.dll'
-    }
+    workingDir 'src/main/rust'
+    commandLine 'cargo', 'build', '--release'
 }
+
 tasks.compileJava.dependsOn buildJNI
 
+
+task cargoClean(type: Exec) {
+    workingDir 'src/main/rust'
+    commandLine 'cargo', 'clean'
+}
 
 task cleanMine(type: Delete) {
     delete 'bin'
     delete 'build'
-    delete fileTree('src/main/cpp').matching { include '**/*.dll' }
 }
-clean.dependsOn('cleanMine')
+clean.dependsOn cleanMine, cargoClean
 
 dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.0'
+
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13.2'
 
