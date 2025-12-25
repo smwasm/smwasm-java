@@ -99,7 +99,7 @@ pub fn inc_sn(_env: JNIEnv) -> u64 {
     return sn;
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_com_smwasm_smwasm_SmWasm_load(mut _env: JNIEnv, 
     _class: jni::objects::JClass, 
     sz_wasm: JString, 
@@ -110,14 +110,13 @@ pub extern "system" fn Java_com_smwasm_smwasm_SmWasm_load(mut _env: JNIEnv,
     smloadwasm::load_wasm(&wasm, space);
 }
 
-
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_com_smwasm_smwasm_SmWasm_sn(_env: JNIEnv, _class: JClass) -> jint {
     let ret = inc_sn(_env) as i32;
     return ret;
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_com_smwasm_smwasm_SmWasm_call(mut _env: JNIEnv, _class: JClass, in_text: JString) -> jstring {
     let mut outtxt = "{}".to_string();
 
@@ -144,7 +143,7 @@ pub extern "system" fn Java_com_smwasm_smwasm_SmWasm_call(mut _env: JNIEnv, _cla
     raw_jstring
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_com_smwasm_smwasm_SmWasm_register(mut _env: JNIEnv, _class: JClass, _usage: JString) -> jboolean {
     let txt: String = _env.get_string(&_usage).expect("").into();
     let _define = json::parse(&txt).unwrap();

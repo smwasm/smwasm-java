@@ -47,9 +47,9 @@ public class LibraryTest {
         smh = SmHub.getInstance();
         LocalTime localTime = LocalTime.now();
         System.out.println(">>> --- begin test " + localTime + " --- (" + obj.sn() + ") --- " + osName + " ---");
-        obj.load("../../_test/wasm/smrdklibr_bg.wasm", 0);
-        obj.load("../../_test/wasm/smlibr_bg.wasm", 0);
-        obj.load("../../_test/wasm/smlibr2_bg.wasm", 0);
+        obj.load("../../_test/wasm/smrdklibr.wasm", 0);
+        obj.load("../../_test/wasm/smlibr.wasm", 0);
+        obj.load("../../_test/wasm/smlibr2.wasm", 0);
 
         System.out.println(">>> --- loaded --- (" + obj.sn() + ") ---");
 

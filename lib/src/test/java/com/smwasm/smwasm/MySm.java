@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.smwasm.smwasm.SmHub;
 
+import org.junit.Test;
+
 public class MySm {
 
     public static String smThirdHeartBeat(String inputText) {
@@ -73,5 +75,9 @@ public class MySm {
         smh.register("{\"$usage\": \"native.heart0g.beat\", \"text\": \"\"}", MySm::smHeart0gBeat);
 
         return true;
+    }
+
+    @Test
+    public void temp() {
     }
 }
