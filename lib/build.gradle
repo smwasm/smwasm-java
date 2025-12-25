@@ -14,7 +14,7 @@ plugins {
 }
 
 group = 'com.smwasm'
-version = '0.1.3'
+version = '0.1.6'
 
 def currentTime = new Date()
 println "--- current time --- ${currentTime} ---"
@@ -73,55 +73,4 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:31.1-jre'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'smwasm'
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name = 'smwasm'
-                description = 'SmartModule & WebAssembly'
-                url = 'https://github.com/smwasm/smwasm-java'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'smwasm'
-                        name = 'smwasm'
-                        email = 'smwasm@outlook.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git@github.com:smwasm/smwasm-java.git'
-                    developerConnection = 'scm:git:ssh@github.com:smwasm/smwasm-java.git'
-                    url = 'https://github.com/smwasm/smwasm-java'
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/smwasm/smwasm-java")
-            credentials {
-                username = 'smwasm'
-                password = getGithubToken()
-            }
-        }
-    }
 }
